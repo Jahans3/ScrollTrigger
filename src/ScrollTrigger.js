@@ -63,16 +63,18 @@ class ScrollTrigger {
     window.addEventListener('mouseleave', leaveHandler)
   }
 
+  static mapActive = element => {
+    if (ScrollTrigger.visible({ element, position: 'bottom' })) {
+      element.classList.remove('inactive')
+      element.classList.add('active')
+    }
+  }
+
   trigger () {
     this.elReveal.map(ScrollTrigger.mapReveal)
     this.elReverseReveal.map(ScrollTrigger.mapReverseReveal)
     this.elHover.map(ScrollTrigger.mapHover)
-    this.elActive.map(element => {
-      if (ScrollTrigger.visible({ element, position: 'bottom' })) {
-        element.classList.remove('inactive')
-        element.classList.add('active')
-      }
-    })
+    this.elActive.map(ScrollTrigger.mapActive)
   }
 }
 
