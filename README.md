@@ -5,10 +5,6 @@ Dynamically add styles to elements as they become visible in the viewport.
 `import ScrollTrigger from 'scroll-trigger-js'`
 
 `new ScrollTrigger()`
-### Dev
-
-###### Install
-`yarn install`
 
 ###### Build
 `yarn build`
