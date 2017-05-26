@@ -78,4 +78,4 @@ class ScrollTrigger {
   }
 }
 
-new ScrollTrigger()
+new ScrollTrigger().trigger()
