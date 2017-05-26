@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "webpack",
-    "test": "DEBUG=worker-* ./node_modules/mocha/bin/mocha ./test/scrollTrigger.spec.js --harmony"
+    "test": "./node_modules/mocha/bin/mocha ./test/scrollTrigger.spec.js --harmony"
   },
   "devDependencies": {
     "assert": "1.4.1",
