@@ -1,14 +1,17 @@
 {
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "test": "DEBUG=worker-* ./node_modules/mocha/bin/mocha ./test/scrollTrigger.spec.js --harmony"
   },
   "devDependencies": {
+    "assert": "1.4.1",
     "babel-core": "6.24.1",
     "babel-eslint": "7.2.3",
     "babel-loader": "7.0.0",
-    "babel-plugin-transform-regenerator": "^6.24.1",
+    "babel-plugin-transform-regenerator": "6.24.1",
     "babel-preset-env": "1.5.1",
     "eslint": "3.19.0",
+    "mocha": "3.4.2",
     "standard": "10.0.2",
     "webpack": "2.6.1"
   },
