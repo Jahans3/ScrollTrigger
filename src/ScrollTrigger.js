@@ -1,105 +1,79 @@
 /**
  * ScrollTrigger
  * Made by @esr360
+ * Made better by @jahans3
  * http://github.com/esr360/ScrollTrigger
- */		
-function scrollTrigger() {
-	
-    // define data types
-    var elReveal        = $('[data-trigger]');
-    var elReverseReveal = $('[data-trigger-reverse]');
-    var elHover         = $('[data-hover]');
-    var elActive        = $('.inactive');
-        
-    // function to decide if element is in viewport
-    $.fn.visible = function(startingPoint){
-        // set default option
-        startingPoint = startingPoint || 'top';
+ */
+class ScrollTrigger {
+  elReveal = document.querySelectorAll('[data-trigger]')
+  elReverseReveal = document.querySelectorAll('[data-trigger-reverse]')
+  elHover = document.querySelectorAll('[data-hover]')
+  elActive = document.querySelectorAll('.inactive')
 
-        // if any part of the element is in view
-        if (startingPoint == 'top') {
-            var a = this.offset().top;
-        }
+  static visible ({ element, position = 'top' }) {
+    const scrolled = window.scrollY + window.innerHeight
+    const client = element.getBoundingClientRect()
 
-        // if majotiy of the element is in view 
-        else if (startingPoint == 'middle') {
-            var a = this.offset().top + (this.height() / 2);
-        }
+    switch (position) {
+      case 'top':
+        return element.offsetTop < scrolled
+      case 'middle':
+        return (element.offsetTop + client.width / 2) < scrolled
+      case 'bottom':
+        return (element.offsetTop + client.height) < scrolled
+    }
+  }
 
-        // if the entire element is in view
-        else if (startingPoint == 'bottom') {
-            var a = this.offset().top + this.height();
-        }
-
-        var b = $(window).scrollTop() + $(window).height();
-
-        // is the element in the viewport?
-        return a < b ? true : false;
+  static mapReveal = element => {
+    const styles = element.trigger
+    const handler = () => {
+      if (ScrollTrigger.visible({ element, position: 'middle' })) {
+        element.style = styles
+      }
     }
 
-    // [data-trigger]
-    elReveal.each(function() {
-        var el = $(this);
-        var styles = el.data('trigger');
-                            
-        $(window).bind('load scroll', function() {
-            if (el.visible('middle')) {
-                el.attr('style', styles);
-            }
-        });	
-    });
-    
-    // [data-trigger-reverse]
-    elReverseReveal.each(function() {
-        var el = $(this);
-        var styles = el.data('trigger-reverse');
-        var cachedStyles = null;
-            
-        // cache current inline styles
-        if (typeof(el.attr('style')) != 'undefined') {
-            var cachedStyles = el.attr('style');
-        }
-        
-        // add new styles to element
-        el.attr('style', styles)
-                            
-        $(window).bind('load scroll', function() {
-            if (el.visible('top')) {
-                // reset the styles
-                el.attr('style', cachedStyles);
-            }
-        });	
-    });
-    
-    // [data-hover]
-    elHover.each(function(){
-        var el = $(this);
-        var styles = el.data('hover');
-                        
-        el.mouseenter(function(){
-            // cache current inline styles
-            cachedStyles = null;
-            if (typeof(el.attr('style')) != 'undefined') {
-                var cachedStyles = el.attr('style');
-            }
-            
-            // combine cached + new styles
-            el.attr('style', cachedStyles + ';' + styles);
-            
-            // remove new styles when mouse leaves element
-            $(this).mouseleave(function(){
-                el.attr('style', cachedStyles);
-            });
-        });
-    });
-    
-    // .inactive
-    elActive.each(function(){
-        if ($(this).visible('bottom')) {
-            $(this).removeClass('inactive').addClass('active');
-        }
-    });
-	
-} // scrollTrigger()
+    window.addEventListener('scroll', handler)
+    window.addEventListener('load', handler)
+  }
 
-$(scrollTrigger);
+  static mapReverseReveal = element => {
+    const styles = element['trigger-reverse']
+    const cachedStyles = element.style
+    const handler = () => {
+      if (ScrollTrigger.visible({ element })) {
+        element.style = cachedStyles
+      }
+    }
+
+    element.style = styles
+    window.addEventListener('load', handler)
+    window.addEventListener('scroll', handler)
+  }
+
+  static mapHover = element => {
+    const styles = element.hover
+    const cachedStyles = element.style || {}
+    const enterHandler = () => {
+      element.style = { ...cachedStyles, ...styles }
+    }
+    const leaveHandler = () => {
+      element.style = cachedStyles
+    }
+    window.addEventListener('mouseenter', enterHandler)
+    window.addEventListener('mouseleave', leaveHandler)
+  }
+
+  trigger () {
+    this.elReveal.map(ScrollTrigger.mapReveal)
+    this.elReverseReveal.map(ScrollTrigger.mapReverseReveal)
+    this.elHover.map(ScrollTrigger.mapHover)
+    this.elActive.map(element => {
+      if (ScrollTrigger.visible({ element, position: 'bottom' })) {
+        element.classList.remove('inactive')
+        element.classList.add('active')
+      }
+    })
+  }
+}
+
+new ScrollTrigger()
